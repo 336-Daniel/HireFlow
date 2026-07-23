@@ -17,13 +17,13 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    //404
+    // 404 No Encontrado
     @ExceptionHandler(ResourceNotfoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceFoundException(
             ResourceNotfoundException ex,
             HttpServletRequest request
-    ){
-        log.warn("recurso no encontrado: {} - Path:{}", ex.getMessage(), request.getRequestURI());
+    ) {
+        log.warn("Recurso no encontrado: {} - Path:{}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -36,13 +36,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    //409
+    // 409 Conflicto (Ej: Postulación duplicada)
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
             DuplicateResourceException ex,
             HttpServletRequest request
-    ){
-        log.warn("recurso duplicado: {} - Path:{}", ex.getMessage(), request.getRequestURI());
+    ) {
+        log.warn("Recurso duplicado: {} - Path:{}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -55,14 +55,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
-
-    //REGLAS DE NEGOCIO 422
+    // 422 Reglas de Negocio
     @ExceptionHandler(BusinessRulesException.class)
     public ResponseEntity<ErrorResponse> handleBusinessRuleException(
             BusinessRulesException ex,
             HttpServletRequest request
-    ){
-        log.warn("Violacion de las reglas de negocio: {} - Path:{}", ex.getMessage(), request.getRequestURI());
+    ) {
+        log.warn("Violación de las reglas de negocio: {} - Path:{}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -75,58 +74,59 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
     }
 
-    // Maneja errores de comunicación con svc-catalog — 503 Service Unavailable
-    @ExceptionHandler(CatalogServiceException.class)
-    public ResponseEntity<ErrorResponse> handleCatalogServiceException(
-            CatalogServiceException ex,
+    // 503 SERVICIOS EXTERNOS (Candidatos, Vacantes o Gemini)
+    // Agrupamos las tres excepciones en un solo manejador para ahorrar código
+    @ExceptionHandler({CandidatoServiceException.class, VacanteServiceException.class, GeminiApiException.class})
+    public ResponseEntity<ErrorResponse> handleExternalServicesException(
+            RuntimeException ex, // Usamos RuntimeException porque las 3 heredan de ella
             HttpServletRequest request) {
 
-        log.error("Error del servicio de catálogo: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+        log.error("Error de comunicación con servicio externo: {} - Path: {}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.SERVICE_UNAVAILABLE.value())
                 .error(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase())
-                .message("El servicio de catálogo no está disponible actualmente.: " + ex.getMessage())
+                .message("Un servicio externo (Candidato/Vacante/IA) no está disponible: " + ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
     }
 
-    //400 - manejo de errores de validacion
+    // 400 - Manejo de errores de validación
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
-    ){
-        log.warn("Validacion fallida - Path:{}",  request.getRequestURI());
+    ) {
+        log.warn("Validación fallida - Path:{}", request.getRequestURI());
 
-        Map<String,String> validationErrors = new HashMap<>();
+        Map<String, String> validationErrors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach((error)->{
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            validationErrors.put(fieldName,errorMessage);
+            validationErrors.put(fieldName, errorMessage);
         });
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("VALIDACION FALLIDA: "+validationErrors)
+                .message("Validación fallida: " + validationErrors)
                 .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    // 400 BAD REQUEST (Para validaciones lógicas como fechas incorrectas)
+    // 400 BAD REQUEST (Para validaciones lógicas internas)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex,
             HttpServletRequest request
-    ){
+    ) {
         log.warn("Petición incorrecta: {} - Path:{}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
@@ -140,21 +140,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    //500
+    // 500 Error genérico del servidor
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex, HttpServletRequest request){
-        log.error("Error inesperado - Path:{} - Error: {}",  request.getRequestURI(), ex.getMessage(),ex);
+            Exception ex, HttpServletRequest request) {
+        log.error("Error inesperado - Path:{} - Error: {}", request.getRequestURI(), ex.getMessage(), ex);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Ha ocurrido un error inesperado. Por favor intente mas tarde.")
+                .message("Ha ocurrido un error inesperado en el servidor. Por favor intente más tarde.")
                 .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
-
 }
