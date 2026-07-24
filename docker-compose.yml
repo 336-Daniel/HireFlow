@@ -1,6 +1,39 @@
 version: '3.8'
 services:
 
+  #SERVICIO DE KEYCLOAK
+  postgres-keycloak:
+    image: postgres:16
+    container_name: postgres-keycloak-HF
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_pass
+    volumes:
+      - ./keycloak-data:/var/lib/postgresql/data
+    networks:
+      - hireflow-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    container_name: keycloak-HF
+    command:
+      - start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_pass
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - hireflow-network
+
+
   candidato-db:
     image: postgres:16-alpine
     container_name: candidato-db
@@ -9,7 +42,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Uisrael.
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - candidato-db-data:/var/lib/postgresql/data
     networks:
@@ -22,7 +55,7 @@ services:
 
   candidato-service:
     build:
-      context: .
+      context: ./candidato-service
       dockerfile: Dockerfile
     container_name: candidato-service
     environment:
@@ -38,8 +71,51 @@ services:
       candidato-db:
         condition: service_healthy
 
+  #SERVICIOS DE MATCH
+      #base de datos
+  match-db:
+    image: postgres:16-alpine
+    container_name: match-db
+    environment:
+      POSTGRES_DB: match_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Uisrael.
+    ports:
+      - "5434:5432"
+    volumes:
+      - match-db-data:/var/lib/postgresql/data
+    networks:
+      - hireflow-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d match_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+      #servicio
+  match-service:
+    build:
+      context: ./match-service
+      dockerfile: Dockerfile
+    container_name: match-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://match-db:5432/match_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Uisrael.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8082:8082"
+    networks:
+      - hireflow-network
+    depends_on:
+      match-db:
+        condition: service_healthy
+
+
+
 volumes:
   candidato-db-data:
+  match-db-data:
 
 networks:
   hireflow-network:
