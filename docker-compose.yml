@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+
+  candidato-db:
+    image: postgres:16-alpine
+    container_name: candidato-db
+    environment:
+      POSTGRES_DB: candidato_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Uisrael.
+    ports:
+      - "5432:5432"
+    volumes:
+      - candidato-db-data:/var/lib/postgresql/data
+    networks:
+      - hireflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d candidato_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  candidato-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: candidato-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://candidato-db:5432/candidato_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Uisrael.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8081:8081"
+    networks:
+      - hireflow-network
+    depends_on:
+      candidato-db:
+        condition: service_healthy
+
+volumes:
+  candidato-db-data:
+
+networks:
+  hireflow-network:
+    driver: bridge
