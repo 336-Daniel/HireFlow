@@ -1,6 +1,7 @@
 package com.uti.matchservice.service.Impl;
 
 import com.uti.matchservice.client.CandidatoWebClient;
+import com.uti.matchservice.client.GeminiApiClient;
 import com.uti.matchservice.client.VacanteWebClient;
 import com.uti.matchservice.dto.CandidatoResponse;
 import com.uti.matchservice.dto.MatchRequest;
@@ -34,7 +35,7 @@ public class MatchServiceImpl implements MatchService {
     private final CandidatoWebClient candidatoWebClient;
     private final VacanteWebClient vacanteWebClient;
 
-    // private final GeminiApiClient geminiApiClient; (Lo inyectaremos cuando lo creemos)
+    private final GeminiApiClient geminiApiClient;
 
     @Override
     @Transactional
@@ -62,14 +63,19 @@ public class MatchServiceImpl implements MatchService {
         // 5. Llamada a la IA (Aislada en un try-catch para no romper el flujo principal)
         try {
             log.info("Llamando a la IA de Gemini para calcular el match...");
-            // AQUÍ IRÁ LA LLAMADA AL SERVICIO DE GEMINI
-            // GeminiResponse iaResponse = geminiApiClient.evaluate(candidato.perfilLaboral(), vacante.descripcion());
-            // match.setIaMatchScore(iaResponse.getScore());
-            // match.setIaFeedback(iaResponse.getFeedback());
 
-            // Simulación temporal para que no dé error mientras no tengamos la IA
-            match.setIaMatchScore(0);
-            match.setIaFeedback("IA pendiente de configuración");
+            // Unimos los campos clave de tus DTOs para darle el mejor contexto posible a la IA
+            String perfilCandidato = String.format("Nombre: %s\nHabilidades Principales: %s\nExperiencia/CV: %s",
+                    candidato.fullName(), candidato.mainSkills(), candidato.cvText());
+
+            String descripcionVacante = String.format("Puesto: %s\nRequisitos: %s",
+                    vacante.jobTitle(), vacante.requirements());
+
+            // Llamamos a nuestro cliente de Gemini
+            var iaResult = geminiApiClient.evaluateMatch(perfilCandidato, descripcionVacante);
+
+            match.setIaMatchScore(iaResult.score());
+            match.setIaFeedback(iaResult.feedback());
 
         } catch (Exception ex) {
             log.warn("La IA de Gemini falló o no está disponible. Guardando postulación con estado pendiente. Error: {}", ex.getMessage());

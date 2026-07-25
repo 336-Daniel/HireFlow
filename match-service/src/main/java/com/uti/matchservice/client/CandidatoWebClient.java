@@ -16,7 +16,7 @@ public class CandidatoWebClient {
     private final WebClient webClient;
 
     // le decimos exactamente cuál WebClient del AppConfig usar
-    public CandidatoWebClient(@Qualifier("candidatoWebClient") WebClient webClient) {
+    public CandidatoWebClient(@Qualifier("candidatoWebClientBean") WebClient webClient) {
         this.webClient = webClient;
     }
 

@@ -103,6 +103,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GEMINI_API_KEY:
     ports:
       - "8082:8082"
     networks:

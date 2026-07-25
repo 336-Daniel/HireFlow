@@ -16,7 +16,7 @@ public class VacanteWebClient {
     private final WebClient webClient;
 
 
-    public VacanteWebClient(@Qualifier("vacanteWebClient") WebClient webClient) {
+    public VacanteWebClient(@Qualifier("vacanteWebClientBean") WebClient webClient) {
         this.webClient = webClient;
     }
 

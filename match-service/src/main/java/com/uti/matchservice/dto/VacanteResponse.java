@@ -1,4 +1,13 @@
 package com.uti.matchservice.dto;
 
-public record VacanteResponse() {
+import java.time.LocalDateTime;
+
+public record VacanteResponse(
+        Long id,
+        String recruiterUsername,
+        String jobTitle,
+        String requirements,
+        String status,
+        LocalDateTime createdAt
+) {
 }
