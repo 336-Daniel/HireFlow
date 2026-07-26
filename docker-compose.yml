@@ -27,11 +27,6 @@ services:
       KC_DB_PASSWORD: keycloak_pass
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      # Hostname FIJO: asi el "iss" del token es siempre http://keycloak:8080/...
-      # sin importar si se llega desde otro contenedor o desde el host (Postman).
-      KC_HOSTNAME: keycloak
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
     volumes:
       - ./keycloak-import:/opt/keycloak/data/import
@@ -72,7 +67,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
     ports:
       - "8081:8081"
     networks:
@@ -115,7 +110,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
       GEMINI_API_KEY:
     ports:
       - "8082:8082"
@@ -161,7 +156,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
     ports:
       - "8083:8083"
     networks:
@@ -182,7 +177,7 @@ services:
       KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
       KEYCLOAK_APP_CLIENT_SECRET: ${KEYCLOAK_APP_CLIENT_SECRET}
       KEYCLOAK_SERVER_URL: http://keycloak:8080
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
     ports:
       - "8084:8084"
     networks:

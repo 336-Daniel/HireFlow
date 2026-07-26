@@ -1,0 +1,17 @@
+# Secretos - NUNCA se suben al repo
+.env
+
+# Datos persistentes de Postgres de Keycloak (son binarios, no tiene sentido versionarlos)
+keycloak-data/
+
+# Build de Maven
+target/
+*.class
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# SO
+.DS_Store
