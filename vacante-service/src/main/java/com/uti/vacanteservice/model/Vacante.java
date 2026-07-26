@@ -15,7 +15,7 @@ public class Vacante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // este dato dejara de venir del body por keycloak
+    // Este dato se extrae del JWT (claim "preferred_username"), nunca del body
     @Column(name = "reclutador_username", nullable = false)
     private String reclutadorUsername;
 

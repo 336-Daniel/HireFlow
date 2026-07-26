@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 public class CandidatoMapper {
 
     // Convertir CandidatoRequest -> Candidato (Entidad), para el registro inicial
-    public Candidato toEntity(CandidatoRequest request) {
+    // candidatoUsername ya no viene del request: se pasa por separado (viene del JWT)
+    public Candidato toEntity(CandidatoRequest request, String candidatoUsername) {
         return Candidato.builder()
-                .candidatoUsername(request.candidatoUsername())
+                .candidatoUsername(candidatoUsername)
                 .fullName(request.fullName())
                 .cvText(request.cvText())
                 .mainSkills(request.mainSkills())

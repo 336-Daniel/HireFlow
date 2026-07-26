@@ -9,6 +9,7 @@ import com.uti.vacanteservice.repository.VacanteRepository;
 import com.uti.vacanteservice.service.VacanteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +26,10 @@ public class VacanteServiceImpl implements VacanteService {
 
     @Override
     @Transactional
-    public VacanteResponse createVacante(VacanteRequest request) {
-        log.info("creando vacante para el reclutador: {}", request.reclutadorUsername());
+    public VacanteResponse createVacante(VacanteRequest request, String reclutadorUsername) {
+        log.info("creando vacante para el reclutador: {}", reclutadorUsername);
 
-        Vacante vacante = vacanteMapper.toEntity(request);
+        Vacante vacante = vacanteMapper.toEntity(request, reclutadorUsername);
         Vacante saved = vacanteRepository.save(vacante);
 
         log.info("Vacante creada exitosamente con el id: {}", saved.getId());
@@ -37,12 +38,11 @@ public class VacanteServiceImpl implements VacanteService {
 
     @Override
     @Transactional
-    public VacanteResponse updateVacante(Long id, VacanteRequest request) {
+    public VacanteResponse updateVacante(Long id, VacanteRequest request, String reclutadorUsername) {
         log.info("actualizando vacante: {}", id);
 
-        Vacante vacante = vacanteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotfoundException(
-                        "No existe una vacante con el id: " + id));
+        Vacante vacante = findVacanteOrThrow(id);
+        validarPropietario(vacante, reclutadorUsername);
 
         vacanteMapper.updateEntityFromRequest(vacante, request);
         Vacante updated = vacanteRepository.save(vacante);
@@ -55,10 +55,7 @@ public class VacanteServiceImpl implements VacanteService {
     @Transactional(readOnly = true)
     public VacanteResponse getVacanteById(Long id) {
         log.info("fetching vacante by id: {}", id);
-        Vacante vacante = vacanteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotfoundException(
-                        "Vacante no encontrada con id: " + id));
-        return vacanteMapper.toResponse(vacante);
+        return vacanteMapper.toResponse(findVacanteOrThrow(id));
     }
 
     @Override
@@ -93,11 +90,11 @@ public class VacanteServiceImpl implements VacanteService {
 
     @Override
     @Transactional
-    public VacanteResponse cerrarVacante(Long id) {
+    public VacanteResponse cerrarVacante(Long id, String reclutadorUsername) {
         log.info("cerrando vacante: {}", id);
-        Vacante vacante = vacanteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotfoundException(
-                        "No existe una vacante con el id: " + id));
+        Vacante vacante = findVacanteOrThrow(id);
+        validarPropietario(vacante, reclutadorUsername);
+
         vacante.setActiva(false);
         Vacante updated = vacanteRepository.save(vacante);
         log.info("Vacante cerrada exitosamente: {}", id);
@@ -106,12 +103,26 @@ public class VacanteServiceImpl implements VacanteService {
 
     @Override
     @Transactional
-    public void deleteVacante(Long id) {
+    public void deleteVacante(Long id, String reclutadorUsername) {
         log.info("eliminando vacante: {}", id);
-        Vacante vacante = vacanteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotfoundException(
-                        "No existe una vacante con el id: " + id));
+        Vacante vacante = findVacanteOrThrow(id);
+        validarPropietario(vacante, reclutadorUsername);
+
         vacanteRepository.delete(vacante);
         log.info("Vacante eliminada exitosamente: {}", id);
+    }
+
+    private Vacante findVacanteOrThrow(Long id) {
+        return vacanteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotfoundException(
+                        "No existe una vacante con el id: " + id));
+    }
+
+    // Regla de negocio: solo el reclutador dueño de la vacante puede modificarla/cerrarla/eliminarla
+    private void validarPropietario(Vacante vacante, String reclutadorUsername) {
+        if (!vacante.getReclutadorUsername().equals(reclutadorUsername)) {
+            throw new AccessDeniedException(
+                    "No tienes permiso para modificar esta vacante: no eres el reclutador que la publico.");
+        }
     }
 }

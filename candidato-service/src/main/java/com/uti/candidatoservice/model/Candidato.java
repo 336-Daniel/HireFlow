@@ -15,8 +15,7 @@ public class Candidato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: cuando se integre Keycloak, este dato dejara de venir del body
-    // y se extraera del JWT (claim "preferred_username").
+
     @Column(name = "candidato_username", nullable = false, unique = true)
     private String candidatoUsername;
 

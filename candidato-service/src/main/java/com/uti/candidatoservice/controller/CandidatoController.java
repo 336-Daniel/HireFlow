@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,21 +21,28 @@ public class CandidatoController {
     private final CandidatoService candidatoService;
 
     @PostMapping
-    public ResponseEntity<CandidatoResponse> createProfile(@Valid @RequestBody CandidatoRequest request) {
-        CandidatoResponse response = candidatoService.createProfile(request);
+    public ResponseEntity<CandidatoResponse> createProfile(
+            @Valid @RequestBody CandidatoRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        CandidatoResponse response = candidatoService.createProfile(request, extractUsername(jwt));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // TODO: cuando se integre Keycloak, {username} se reemplazara por el username
-    // extraido del JWT, para que un candidato solo pueda editar su propio perfil.
-    @PutMapping("/{username}")
+    @PutMapping
     public ResponseEntity<CandidatoResponse> updateProfile(
-            @PathVariable String username,
-            @Valid @RequestBody CandidatoRequest request) {
-        CandidatoResponse response = candidatoService.updateProfile(username, request);
+            @Valid @RequestBody CandidatoRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        CandidatoResponse response = candidatoService.updateProfile(request, extractUsername(jwt));
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<CandidatoResponse> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
+        CandidatoResponse response = candidatoService.getMyProfile(extractUsername(jwt));
+        return ResponseEntity.ok(response);
+    }
+
+    // Usado por RECLUTADOR (ver perfil de quien postulo) y por match-service (obtener cvText/mainSkills para la IA)
     @GetMapping("/{username}")
     public ResponseEntity<CandidatoResponse> getCandidatoByUsername(@PathVariable String username) {
         CandidatoResponse response = candidatoService.getCandidatoByUsername(username);
@@ -45,9 +54,14 @@ public class CandidatoController {
         return ResponseEntity.ok(candidatoService.getAllCandidatos());
     }
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<Void> deleteCandidato(@PathVariable String username) {
-        candidatoService.deleteCandidato(username);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMyProfile(@AuthenticationPrincipal Jwt jwt) {
+        candidatoService.deleteMyProfile(extractUsername(jwt));
         return ResponseEntity.noContent().build();
+    }
+
+    // El username nunca viene del body ni de la URL en las acciones "propias": siempre del JWT
+    private String extractUsername(Jwt jwt) {
+        return jwt.getClaimAsString("preferred_username");
     }
 }

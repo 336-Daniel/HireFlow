@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,6 +54,14 @@ public class GlobalExceptionHandler {
             validationErrors.put(fieldName, errorMessage);
         });
         return build(HttpStatus.BAD_REQUEST, "Validación fallida: " + validationErrors, request);
+    }
+
+    // 403 el reclutador intenta modificar una vacante que no es suya
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Acceso denegado: {} - Path:{}", ex.getMessage(), request.getRequestURI());
+        return build(HttpStatus.FORBIDDEN, ex.getMessage(), request);
     }
 
     // 400 Peticiones incorrectas

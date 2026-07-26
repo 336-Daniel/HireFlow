@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface VacanteService {
 
-    // PUBLICAR VACANTE (el reclutador puede publicar varias)
-    VacanteResponse createVacante(VacanteRequest request);
+    // PUBLICAR VACANTE (el reclutadorUsername viene del JWT)
+    VacanteResponse createVacante(VacanteRequest request, String reclutadorUsername);
 
-    // ACTUALIZAR VACANTE EXISTENTE
-    VacanteResponse updateVacante(Long id, VacanteRequest request);
+    // ACTUALIZAR VACANTE EXISTENTE (solo el dueño puede hacerlo)
+    VacanteResponse updateVacante(Long id, VacanteRequest request, String reclutadorUsername);
 
     // VER EL DETALLE DE UNA VACANTE POR ID
     VacanteResponse getVacanteById(Long id);
@@ -25,9 +25,9 @@ public interface VacanteService {
     // LISTAR LAS VACANTES PUBLICADAS POR UN RECLUTADOR
     List<VacanteResponse> getVacantesByReclutador(String reclutadorUsername);
 
-    // CERRAR VACANTE (deja de ser visible para los candidatos, sin borrarla)
-    VacanteResponse cerrarVacante(Long id);
+    // CERRAR VACANTE (solo el dueño puede hacerlo)
+    VacanteResponse cerrarVacante(Long id, String reclutadorUsername);
 
-    // ELIMINAR VACANTE
-    void deleteVacante(Long id);
+    // ELIMINAR VACANTE (solo el dueño puede hacerlo)
+    void deleteVacante(Long id, String reclutadorUsername);
 }

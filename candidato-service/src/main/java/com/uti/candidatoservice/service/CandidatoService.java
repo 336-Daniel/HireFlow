@@ -7,18 +7,21 @@ import java.util.List;
 
 public interface CandidatoService {
 
-    // CREAR PERFIL (una sola vez por username)
-    CandidatoResponse createProfile(CandidatoRequest request);
+    // CREAR PERFIL (una sola vez por username, el username viene del JWT)
+    CandidatoResponse createProfile(CandidatoRequest request, String candidatoUsername);
 
-    // ACTUALIZAR PERFIL EXISTENTE
-    CandidatoResponse updateProfile(String candidatoUsername, CandidatoRequest request);
+    // ACTUALIZAR MI PROPIO PERFIL (el username viene del JWT)
+    CandidatoResponse updateProfile(CandidatoRequest request, String candidatoUsername);
 
-    // VER EL PERFIL DE UN CANDIDATO POR USERNAME
+    // VER MI PROPIO PERFIL
+    CandidatoResponse getMyProfile(String candidatoUsername);
+
+    // VER EL PERFIL DE UN CANDIDATO POR USERNAME (usado por RECLUTADOR y por match-service)
     CandidatoResponse getCandidatoByUsername(String candidatoUsername);
 
-    // LISTAR TODOS LOS CANDIDATOS (util para pruebas mientras no hay frontend)
+    // LISTAR TODOS LOS CANDIDATOS (util para pruebas)
     List<CandidatoResponse> getAllCandidatos();
 
-    // ELIMINAR PERFIL
-    void deleteCandidato(String candidatoUsername);
+    // ELIMINAR MI PROPIO PERFIL (el username viene del JWT)
+    void deleteMyProfile(String candidatoUsername);
 }

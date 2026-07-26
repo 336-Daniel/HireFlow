@@ -2,10 +2,8 @@ package com.uti.vacanteservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record VacanteRequest(
 
-        @NotBlank(message = "El username del reclutador es obligatorio.")
-        String reclutadorUsername,
+public record VacanteRequest(
 
         @NotBlank(message = "El titulo de la vacante es obligatorio.")
         String titulo,

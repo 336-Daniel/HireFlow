@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 public class VacanteMapper {
 
     // Convertir VacanteRequest a vacante para la publicaicon
-    public Vacante toEntity(VacanteRequest request) {
+    // reclutadorUsername ya no viene del request: se pasa por separado (viene del JWT)
+    public Vacante toEntity(VacanteRequest request, String reclutadorUsername) {
         return Vacante.builder()
-                .reclutadorUsername(request.reclutadorUsername())
+                .reclutadorUsername(reclutadorUsername)
                 .titulo(request.titulo())
                 .descripcion(request.descripcion())
                 .requisitos(request.requisitos())

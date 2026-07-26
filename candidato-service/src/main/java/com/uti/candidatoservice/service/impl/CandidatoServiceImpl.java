@@ -26,15 +26,15 @@ public class CandidatoServiceImpl implements CandidatoService {
 
     @Override
     @Transactional
-    public CandidatoResponse createProfile(CandidatoRequest request) {
-        log.info("creando perfil de candidato para: {}", request.candidatoUsername());
+    public CandidatoResponse createProfile(CandidatoRequest request, String candidatoUsername) {
+        log.info("creando perfil de candidato para: {}", candidatoUsername);
 
-        if (candidatoRepository.existsByCandidatoUsername(request.candidatoUsername())) {
+        if (candidatoRepository.existsByCandidatoUsername(candidatoUsername)) {
             throw new DuplicateResourceException(
-                    "Ya existe un perfil de candidato para el usuario: " + request.candidatoUsername());
+                    "Ya existe un perfil de candidato para el usuario: " + candidatoUsername);
         }
 
-        Candidato candidato = candidatoMapper.toEntity(request);
+        Candidato candidato = candidatoMapper.toEntity(request, candidatoUsername);
         Candidato saved = candidatoRepository.save(candidato);
 
         log.info("Perfil de candidato creado exitosamente con el id: {}", saved.getId());
@@ -43,7 +43,7 @@ public class CandidatoServiceImpl implements CandidatoService {
 
     @Override
     @Transactional
-    public CandidatoResponse updateProfile(String candidatoUsername, CandidatoRequest request) {
+    public CandidatoResponse updateProfile(CandidatoRequest request, String candidatoUsername) {
         log.info("actualizando perfil de candidato: {}", candidatoUsername);
 
         Candidato candidato = candidatoRepository.findByCandidatoUsername(candidatoUsername)
@@ -55,6 +55,13 @@ public class CandidatoServiceImpl implements CandidatoService {
 
         log.info("Perfil de candidato actualizado exitosamente: {}", candidatoUsername);
         return candidatoMapper.toResponse(updated);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CandidatoResponse getMyProfile(String candidatoUsername) {
+        log.info("consultando mi perfil: {}", candidatoUsername);
+        return getCandidatoByUsername(candidatoUsername);
     }
 
     @Override
@@ -79,7 +86,7 @@ public class CandidatoServiceImpl implements CandidatoService {
 
     @Override
     @Transactional
-    public void deleteCandidato(String candidatoUsername) {
+    public void deleteMyProfile(String candidatoUsername) {
         log.info("eliminando perfil de candidato: {}", candidatoUsername);
         Candidato candidato = candidatoRepository.findByCandidatoUsername(candidatoUsername)
                 .orElseThrow(() -> new ResourceNotfoundException(
