@@ -1,0 +1,17 @@
+com\uti\vacanteservice\exception\DuplicateResourceException.class
+com\uti\vacanteservice\service\impl\VacanteServiceImpl.class
+com\uti\vacanteservice\config\SecurityConfig.class
+com\uti\vacanteservice\exception\GlobalExceptionHandler.class
+com\uti\vacanteservice\mapper\VacanteMapper.class
+com\uti\vacanteservice\controller\VacanteController.class
+com\uti\vacanteservice\model\Vacante.class
+com\uti\vacanteservice\VacanteServiceApplication.class
+com\uti\vacanteservice\repository\VacanteRepository.class
+com\uti\vacanteservice\exception\ErrorResponse.class
+com\uti\vacanteservice\exception\BusinessRulesException.class
+com\uti\vacanteservice\exception\ResourceNotfoundException.class
+com\uti\vacanteservice\dto\VacanteResponse.class
+com\uti\vacanteservice\service\VacanteService.class
+com\uti\vacanteservice\dto\VacanteRequest.class
+com\uti\vacanteservice\exception\ErrorResponse$ErrorResponseBuilder.class
+com\uti\vacanteservice\model\Vacante$VacanteBuilder.class

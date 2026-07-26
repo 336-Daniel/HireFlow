@@ -1,0 +1,17 @@
+com\uti\candidatoservice\model\Candidato.class
+com\uti\candidatoservice\service\CandidatoService.class
+com\uti\candidatoservice\exception\ErrorResponse$ErrorResponseBuilder.class
+com\uti\candidatoservice\exception\ResourceNotfoundException.class
+com\uti\candidatoservice\exception\GlobalExceptionHandler.class
+com\uti\candidatoservice\exception\BusinessRulesException.class
+com\uti\candidatoservice\dto\CandidatoResponse.class
+com\uti\candidatoservice\model\Candidato$CandidatoBuilder.class
+com\uti\candidatoservice\CandidatoServiceApplication.class
+com\uti\candidatoservice\service\impl\CandidatoServiceImpl.class
+com\uti\candidatoservice\mapper\CandidatoMapper.class
+com\uti\candidatoservice\repository\CandidatoRepository.class
+com\uti\candidatoservice\controller\CandidatoController.class
+com\uti\candidatoservice\exception\ErrorResponse.class
+com\uti\candidatoservice\dto\CandidatoRequest.class
+com\uti\candidatoservice\exception\DuplicateResourceException.class
+com\uti\candidatoservice\config\SecurityConfig.class

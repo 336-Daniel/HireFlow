@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="vacante-service" />
+        <module name="auth-service" />
         <module name="match-service" />
         <module name="candidato-service" />
       </profile>
@@ -14,6 +15,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="auth-service" options="-parameters" />
       <module name="candidato-service" options="-parameters" />
       <module name="match-service" options="-parameters" />
       <module name="vacante-service" options="-parameters" />

@@ -1,0 +1,15 @@
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\CandidatoServiceApplication.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\config\SecurityConfig.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\controller\CandidatoController.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\dto\CandidatoRequest.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\dto\CandidatoResponse.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\exception\BusinessRulesException.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\exception\DuplicateResourceException.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\exception\ErrorResponse.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\exception\GlobalExceptionHandler.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\exception\ResourceNotfoundException.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\mapper\CandidatoMapper.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\model\Candidato.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\repository\CandidatoRepository.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\service\CandidatoService.java
+C:\Node\HireFlow\candidato-service\src\main\java\com\uti\candidatoservice\service\impl\CandidatoServiceImpl.java
