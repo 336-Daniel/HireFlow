@@ -19,6 +19,7 @@ services:
     container_name: keycloak-HF
     command:
       - start-dev
+      - --import-realm
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
@@ -26,6 +27,14 @@ services:
       KC_DB_PASSWORD: keycloak_pass
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      # Hostname FIJO: asi el "iss" del token es siempre http://keycloak:8080/...
+      # sin importar si se llega desde otro contenedor o desde el host (Postman).
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+    volumes:
+      - ./keycloak-import:/opt/keycloak/data/import
     ports:
       - "8180:8080"
     depends_on:
@@ -63,6 +72,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
     ports:
       - "8081:8081"
     networks:
@@ -70,8 +80,10 @@ services:
     depends_on:
       candidato-db:
         condition: service_healthy
+      keycloak:
+        condition: service_started
 
-  #SERVICIOS DE MATCH
+      #SERVICIOS DE MATCH
       #base de datos
   match-db:
     image: postgres:16-alpine
@@ -103,8 +115,8 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      GEMINI_API_KEY: 
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+      GEMINI_API_KEY:
     ports:
       - "8082:8082"
     networks:
@@ -112,8 +124,13 @@ services:
     depends_on:
       match-db:
         condition: service_healthy
+      keycloak:
+        condition: service_started
 
-  #servicio vacante
+
+
+      #SERVICIOS DE VACANTE
+      #base de datos
   vacante-db:
     image: postgres:16-alpine
     container_name: vacante-db
@@ -133,6 +150,7 @@ services:
       timeout: 5s
       retries: 5
 
+      #servicio
   vacante-service:
     build:
       context: ./vacante-service
@@ -143,6 +161,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
     ports:
       - "8083:8083"
     networks:
@@ -150,6 +169,44 @@ services:
     depends_on:
       vacante-db:
         condition: service_healthy
+      keycloak:
+        condition: service_started
+
+  #SERVICIO DE AUTENTICACION (registro/login intermediado via Keycloak Admin API)
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    environment:
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      KEYCLOAK_APP_CLIENT_SECRET: ${KEYCLOAK_APP_CLIENT_SECRET}
+      KEYCLOAK_SERVER_URL: http://keycloak:8080
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
+    ports:
+      - "8084:8084"
+    networks:
+      - hireflow-network
+    depends_on:
+      - keycloak
+
+  #NGINX - punto de entrada unico al sistema
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-HF
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    networks:
+      - hireflow-network
+    depends_on:
+      - candidato-service
+      - match-service
+      - vacante-service
+      - auth-service
+
+
 
 volumes:
   candidato-db-data:
