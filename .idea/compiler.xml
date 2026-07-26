@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="vacante-service" />
         <module name="match-service" />
         <module name="candidato-service" />
       </profile>
@@ -15,6 +16,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="candidato-service" options="-parameters" />
       <module name="match-service" options="-parameters" />
+      <module name="vacante-service" options="-parameters" />
     </option>
   </component>
 </project>

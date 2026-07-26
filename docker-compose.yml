@@ -103,7 +103,8 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      GEMINI_API_KEY:
+      GEMINI_API_KEY: 
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
     ports:
       - "8082:8082"
     networks:
@@ -112,11 +113,48 @@ services:
       match-db:
         condition: service_healthy
 
+  #servicio vacante
+  vacante-db:
+    image: postgres:16-alpine
+    container_name: vacante-db
+    environment:
+      POSTGRES_DB: vacante_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Uisrael.
+    ports:
+      - "5435:5432"
+    volumes:
+      - vacante-db-data:/var/lib/postgresql/data
+    networks:
+      - hireflow-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d vacante_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  vacante-service:
+    build:
+      context: ./vacante-service
+      dockerfile: Dockerfile
+    container_name: vacante-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://vacante-db:5432/vacante_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Uisrael.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8083:8083"
+    networks:
+      - hireflow-network
+    depends_on:
+      vacante-db:
+        condition: service_healthy
 
 volumes:
   candidato-db-data:
   match-db-data:
+  vacante-db-data:
 
 networks:
   hireflow-network:

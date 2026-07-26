@@ -53,6 +53,11 @@ public class MatchServiceImpl implements MatchService {
         log.info("Verificando existencia de la vacante via WebClient...");
         VacanteResponse vacante = vacanteWebClient.getVacanteById(request.vacanteId());
 
+        //validacion de vacante activa
+        if (!vacante.activa()) {
+            throw new IllegalArgumentException("No puedes postularte a esta vacante porque ya no está activa.");
+        }
+
         // 3. Obtener el perfil del candidato
         log.info("Obteniendo detalles del candidato via WebClient...");
         CandidatoResponse candidato = candidatoWebClient.getCandidatoByUsername(candidatoUsername);
@@ -64,14 +69,12 @@ public class MatchServiceImpl implements MatchService {
         try {
             log.info("Llamando a la IA de Gemini para calcular el match...");
 
-            // Unimos los campos clave de tus DTOs para darle el mejor contexto posible a la IA
             String perfilCandidato = String.format("Nombre: %s\nHabilidades Principales: %s\nExperiencia/CV: %s",
                     candidato.fullName(), candidato.mainSkills(), candidato.cvText());
 
-            String descripcionVacante = String.format("Puesto: %s\nRequisitos: %s",
-                    vacante.jobTitle(), vacante.requirements());
+            String descripcionVacante = String.format("Puesto: %s\nDescripción: %s\nRequisitos: %s",
+                    vacante.titulo(), vacante.descripcion(), vacante.requisitos());
 
-            // Llamamos a nuestro cliente de Gemini
             var iaResult = geminiApiClient.evaluateMatch(perfilCandidato, descripcionVacante);
 
             match.setIaMatchScore(iaResult.score());
