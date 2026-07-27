@@ -68,6 +68,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
     ports:
       - "8081:8081"
     networks:
@@ -111,6 +112,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
       GEMINI_API_KEY:
     ports:
       - "8082:8082"
@@ -157,6 +159,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: Uisrael.
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
     ports:
       - "8083:8083"
     networks:
@@ -178,6 +181,7 @@ services:
       KEYCLOAK_APP_CLIENT_SECRET: ${KEYCLOAK_APP_CLIENT_SECRET}
       KEYCLOAK_SERVER_URL: http://keycloak:8080
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/HireFlow-system/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/HireFlow-system
     ports:
       - "8084:8084"
     networks:
