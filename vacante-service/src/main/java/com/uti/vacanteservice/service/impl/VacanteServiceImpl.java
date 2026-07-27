@@ -89,6 +89,16 @@ public class VacanteServiceImpl implements VacanteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<VacanteResponse> getVacantesActivasByReclutador(String reclutadorUsername) {
+        log.info("fetching vacantes activas del reclutador: {}", reclutadorUsername);
+        return vacanteRepository.findByReclutadorUsernameAndActivaTrue(reclutadorUsername)
+                .stream()
+                .map(vacanteMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public VacanteResponse cerrarVacante(Long id, String reclutadorUsername) {
         log.info("cerrando vacante: {}", id);

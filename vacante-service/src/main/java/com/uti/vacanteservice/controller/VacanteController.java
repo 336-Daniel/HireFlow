@@ -55,9 +55,15 @@ public class VacanteController {
         return ResponseEntity.ok(vacanteService.getVacantesActivas());
     }
 
+    @GetMapping("/mis-vacantes")
+    public ResponseEntity<List<VacanteResponse>> getMyVacantes(@AuthenticationPrincipal Jwt jwt) {
+        List<VacanteResponse> response = vacanteService.getVacantesByReclutador(extractUsername(jwt));
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/reclutador/{username}")
     public ResponseEntity<List<VacanteResponse>> getVacantesByReclutador(@PathVariable String username) {
-        return ResponseEntity.ok(vacanteService.getVacantesByReclutador(username));
+        return ResponseEntity.ok(vacanteService.getVacantesActivasByReclutador(username));
     }
 
     // solo el reclutador dueño de la vacante puede cerrarla

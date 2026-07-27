@@ -25,14 +25,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Solo el RECLUTADOR puede publicar, editar, cerrar o eliminar vacantes
                         .requestMatchers(HttpMethod.POST, "/api/v1/vacantes").hasRole("RECLUTADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/vacantes/**").hasRole("RECLUTADOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/vacantes/**").hasRole("RECLUTADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/vacantes/**").hasRole("RECLUTADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/vacantes/mis-vacantes").hasRole("RECLUTADOR")
 
-                        // Lectura abierta: la usan los CANDIDATO (ver vacantes activas), los RECLUTADOR
-                        // (ver las suyas) y match-service (sin token propagado) para validar una vacante
                         .requestMatchers(HttpMethod.GET, "/api/v1/vacantes/**").permitAll()
 
                         .anyRequest().authenticated())

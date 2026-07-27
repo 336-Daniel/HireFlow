@@ -3,12 +3,11 @@ package com.uti.matchservice.service.Impl;
 import com.uti.matchservice.client.CandidatoWebClient;
 import com.uti.matchservice.client.GeminiApiClient;
 import com.uti.matchservice.client.VacanteWebClient;
-import com.uti.matchservice.dto.CandidatoResponse;
-import com.uti.matchservice.dto.MatchRequest;
-import com.uti.matchservice.dto.MatchResponse;
-import com.uti.matchservice.dto.VacanteResponse;
+import com.uti.matchservice.dto.*;
+import com.uti.matchservice.exception.CandidatoServiceException;
 import com.uti.matchservice.exception.DuplicateResourceException;
 import com.uti.matchservice.exception.ResourceNotfoundException;
+import com.uti.matchservice.exception.VacanteServiceException;
 import com.uti.matchservice.mapper.MatchMapper;
 import com.uti.matchservice.model.Match;
 import com.uti.matchservice.repository.MatchRepository;
@@ -102,8 +101,14 @@ public class MatchServiceImpl implements MatchService {
             throw (DuplicateResourceException) throwable;
         }
 
-        // Si fue un error de comunicación, lanzamos un error general del servidor
-        throw new RuntimeException("No se pudo procesar la postulación porque los servicios externos (Vacantes/Candidatos) no están disponibles. Intente más tarde.");
+        // Si el error original ya viene tipado desde el WebClient, lo re-lanzamos tal cual
+        if (throwable instanceof VacanteServiceException || throwable instanceof CandidatoServiceException) {
+            throw (RuntimeException) throwable;
+        }
+
+        // Cualquier otro caso: envolvemos en una excepción tipada (no RuntimeException genérico)
+        throw new VacanteServiceException(
+                "No se pudo procesar la postulación porque los servicios externos (Vacantes/Candidatos) no están disponibles. Intente más tarde.");
     }
 
     @Override
@@ -118,11 +123,19 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MatchResponse> getMatchesByCandidatoUsername(String candidatoUsername) {
+    public List<MatchHistorialResponse> getMatchesByCandidatoUsername(String candidatoUsername) {
         log.info("Obteniendo historial de postulaciones para el candidato: {}", candidatoUsername);
         return matchRepository.findByCandidatoUsername(candidatoUsername)
                 .stream()
-                .map(matchMapper::toResponse)
+                .map(match -> {
+                    try {
+                        VacanteResponse vacante = vacanteWebClient.getVacanteById(match.getVacanteId());
+                        return matchMapper.toHistorialResponse(match, vacante);
+                    } catch (Exception ex) {
+                        log.warn("No se logró obtener el detalle de la vacante para el match id: {}", match.getId());
+                        return matchMapper.toHistorialResponse(match, null);
+                    }
+                })
                 .collect(Collectors.toList());
     }
 

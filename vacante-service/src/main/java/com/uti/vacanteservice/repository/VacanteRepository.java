@@ -14,4 +14,7 @@ public interface VacanteRepository extends JpaRepository<Vacante, Long> {
 
     // el reclutador vea las vacantes que el mismo publico
     List<Vacante> findByReclutadorUsername(String reclutadorUsername);
+
+    // busqueda publica: el candidato ve solo las vacantes activas de un reclutador especifico
+    List<Vacante> findByReclutadorUsernameAndActivaTrue(String reclutadorUsername);
 }

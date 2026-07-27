@@ -28,6 +28,9 @@ public interface VacanteService {
     // CERRAR VACANTE (solo el dueño puede hacerlo)
     VacanteResponse cerrarVacante(Long id, String reclutadorUsername);
 
+    // LISTAR SOLO LAS VACANTES ACTIVAS DE UN RECLUTADOR (busqueda pública del candidato)
+    List<VacanteResponse> getVacantesActivasByReclutador(String reclutadorUsername);
+
     // ELIMINAR VACANTE (solo el dueño puede hacerlo)
     void deleteVacante(Long id, String reclutadorUsername);
 }

@@ -1,5 +1,6 @@
 package com.uti.matchservice.controller;
 
+import com.uti.matchservice.dto.MatchHistorialResponse;
 import com.uti.matchservice.dto.MatchRequest;
 import com.uti.matchservice.dto.MatchResponse;
 import com.uti.matchservice.service.MatchService;
@@ -33,12 +34,10 @@ public class MatchController {
     }
 
     @GetMapping("/historial")
-    public ResponseEntity<List<MatchResponse>> getHistorialCandidato(
+    public ResponseEntity<List<MatchHistorialResponse>> getHistorialCandidato(
             @AuthenticationPrincipal Jwt jwt) {
-        // el candidato solo puede ver sus propias postulaciones
         String candidatoUsername = jwt.getClaimAsString("preferred_username");
-
-        List<MatchResponse> responses = matchService.getMatchesByCandidatoUsername(candidatoUsername);
+        List<MatchHistorialResponse> responses = matchService.getMatchesByCandidatoUsername(candidatoUsername);
         return ResponseEntity.ok(responses);
     }
 

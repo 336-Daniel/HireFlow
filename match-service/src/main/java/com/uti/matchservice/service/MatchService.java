@@ -1,5 +1,6 @@
 package com.uti.matchservice.service;
 
+import com.uti.matchservice.dto.MatchHistorialResponse;
 import com.uti.matchservice.dto.MatchRequest;
 import com.uti.matchservice.dto.MatchResponse;
 
@@ -15,7 +16,7 @@ public interface MatchService {
     List<MatchResponse> getMatchesByVacanteId(Long vacanteId);
 
     //Permite a un usuario ver a qué ofertas ha aplicado
-    List<MatchResponse> getMatchesByCandidatoUsername(String candidatoUsername);
+    List<MatchHistorialResponse> getMatchesByCandidatoUsername(String candidatoUsername);
 
     // Por si se necesita buscar una postulación exacta por su ID
     MatchResponse getMatchById(Long matchId);
