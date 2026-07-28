@@ -25,7 +25,7 @@ public class Vacante {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "requisitos")
+    @Column(name = "requisitos", columnDefinition = "TEXT")
     private String requisitos;
 
     // Permite al reclutador "cerrar" la vacante sin borrarla
