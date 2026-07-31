@@ -58,8 +58,7 @@ public class AuthController {
                 request.password()
         );
 
-        // A diferencia del proyecto de referencia (rol fijo "PATIENT"), aqui usamos
-        // el rol que el propio usuario eligio en el formulario de registro
+
         keycloakAdminService.assignRealmRole(userId, request.role());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

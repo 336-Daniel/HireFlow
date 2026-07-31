@@ -1,6 +1,5 @@
 package com.uti.matchservice.dto;
 
-import java.time.LocalDateTime;
 
 public record VacanteResponse(
         Long id,

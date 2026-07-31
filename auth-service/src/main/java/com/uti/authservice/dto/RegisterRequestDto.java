@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-// DTO de entrada para el auto-registro publico.
-// A diferencia del proyecto de referencia (donde el rol PATIENT era fijo), en HireFlow
-// el usuario SI elige su rol al registrarse, porque tanto CANDIDATO como RECLUTADOR
-// son roles de auto-servicio (ninguno es un rol elevado como ADMIN).
+
 public record RegisterRequestDto(
 
         @NotBlank(message = "El username es obligatorio")

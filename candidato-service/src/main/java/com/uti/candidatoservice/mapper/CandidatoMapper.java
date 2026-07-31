@@ -16,6 +16,7 @@ public class CandidatoMapper {
                 .fullName(request.fullName())
                 .cvText(request.cvText())
                 .mainSkills(request.mainSkills())
+                .aniosExp(request.aniosExp())
                 .build();
     }
 
@@ -33,7 +34,8 @@ public class CandidatoMapper {
                 candidato.getCandidatoUsername(),
                 candidato.getFullName(),
                 candidato.getCvText(),
-                candidato.getMainSkills()
+                candidato.getMainSkills(),
+                candidato.getAniosExp()
         );
     }
 }

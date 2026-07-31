@@ -12,6 +12,13 @@ public record CandidatoRequest(
         String cvText,
 
         @NotBlank(message = "Las habilidades principales son obligatorias.")
-        String mainSkills
+        String mainSkills,
+
+        @NotBlank(message = "Los años de experiencia son necesarios")
+        String aniosExp
+
+
+
+
 
 ) {}

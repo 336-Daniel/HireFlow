@@ -27,4 +27,9 @@ public class Candidato {
 
     @Column(name = "main_skills")
     private String mainSkills;
+
+    @Column(name = "anios_exp", nullable = false)
+    private String aniosExp;
+
+
 }

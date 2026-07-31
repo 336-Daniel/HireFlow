@@ -6,5 +6,6 @@ public record CandidatoResponse(
         String candidatoUsername,
         String fullName,
         String cvText,
-        String mainSkills
+        String mainSkills,
+        String aniosExp
 ) {}
